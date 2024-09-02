@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Build Configuration. Required variables to compile the ROM.
-CONFIG_LUNCH=""
+DEVICE=""
+VARIANT=""
 CONFIG_OFFICIAL_FLAG=""
-CONFIG_TARGET="bacon"
 
 # Telegram Configuration
 CONFIG_CHATID="-"
@@ -25,7 +25,6 @@ OFFICIAL="0"
 ROOT_DIRECTORY="$(pwd)"
 
 # Post Constants. Required variables for posting purposes.
-DEVICE="$(sed -e "s/^.*_//" -e "s/-.*//" <<<"$CONFIG_LUNCH")"
 ROM_NAME="$(sed "s#.*/##" <<<"$(pwd)")"
 OUT="$(pwd)/out/target/product/$DEVICE"
 STICKER_URL="https://index.sauraj.eu.org/api/raw/?path=/sticker.webp"
@@ -72,7 +71,7 @@ Options:
 done
 
 # Configuration Checking. Exit the script if required variables aren"t set.
-if [[ $CONFIG_LUNCH == "" ]] || [[ $CONFIG_TARGET == "" ]]; then
+if [[ $DEVICE == "" ]] || [[ $VARIANT == "" ]]; then
     echo -e "$RED\nERROR: Please specify all of the mandatory variables!! Exiting now...$RESET\n"
     exit 1
 fi
@@ -251,7 +250,7 @@ build_start_message="🟡 | <i>Compiling ROM...</i>
 <b>• DEVICE:</b> <code>$DEVICE</code>
 <b>• JOBS:</b> <code>$CONFIG_COMPILE_JOBS Cores</code>
 <b>• TYPE:</b> <code>$([ "$OFFICIAL" == "1" ] && echo "Official" || echo "Unofficial")</code>
-<b>• PROGRESS</b>: <code>Lunching...</code>"
+<b>• PROGRESS</b>: <code>Brunching...</code>"
 
 build_message_id=$(send_message "$build_start_message" "$CONFIG_CHATID")
 
@@ -261,19 +260,16 @@ BUILD_START=$(TZ=Asia/Dhaka date +"%s")
 echo -e "$BOLD_GREEN\nSetting up the build environment...$RESET"
 source build/envsetup.sh
 
-echo -e "$BOLD_GREEN\nStarting to lunch "$DEVICE" now...$RESET"
-lunch "$CONFIG_LUNCH"
-
 if [ $? -eq 0 ]; then
     echo -e "$BOLD_GREEN\nStarting to build now...$RESET"
     m installclean -j$CONFIG_COMPILE_JOBS
-    m "$CONFIG_TARGET" -j$CONFIG_COMPILE_JOBS 2>&1 | tee -a "$ROOT_DIRECTORY/build.log" &
+    brunch "$DEVICE" "$VARIANT" 2>&1 | tee -a "$ROOT_DIRECTORY/build.log" &
 else
-    echo -e "$RED\nFailed to lunch "$DEVICE"$RESET"
+    echo -e "$RED\nFailed to brunch "$DEVICE"$RESET"
 
     build_failed_message="🔴 | <i>ROM compilation failed...</i>
     
-<i>Failed at lunching $DEVICE...</i>"
+<i>Failed at brunching $DEVICE...</i>"
 
     edit_message "$build_failed_message" "$CONFIG_CHATID" "$build_message_id"
     send_sticker "$STICKER_URL" "$CONFIG_CHATID"

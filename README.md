@@ -1,22 +1,27 @@
 # Script written in Bash for easy interaction between Ci and Us
-Created by @hipexscape
+Created by [hipexscape](https://github.com/hipexscape)
 
 ## How to use ?
 
 - First fork this repo and fill the variables (defined below)
 - Clone this repo using curl
-- Then do bash script.sh -h
+- Then do
+
+```
+ bash ci_bot.sh -h
+```
+
 - Done
 
 ### Variables 
 
 ---------------
 ```bash
-# Lunch command , you should not leave it empty device codename get pulled from the command! :
-CONFIG_LUNCH="lineage_lancelot-user"
+# Your device codename :
+DEVICE=""
 
-# Compilation target. e.g. bacon or bootimage [Default is bacon!] :
-CONFIG_TARGET="bacon"
+# Your build variant : [user/userdebug/eng] 
+VARIANT=""
 
 # Your telegram group/channel chatid eg - "-xxxxxxxx"
 CONFIG_CHATID=""
@@ -30,6 +35,6 @@ CONFIG_ERROR_CHATID=""
 # Config PixelDrain api key (get it from https://pixeldrain.com/api)
 CONFIG_PDUP_APT=""
 
-# Turn off server after build (save resource)
+# Turn off server after build (save resource) [false/true]
 POWEROFF=""
 ```

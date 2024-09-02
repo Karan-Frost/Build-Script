@@ -38,6 +38,9 @@ while [[ $# -gt 0 ]]; do
     -c | --clean)
         CLEAN="1"
         ;;
+    --c-d | --clean-device)
+        CLEAN_DEVICE="1"
+        ;;
     -o | --official)
         if [ -n "$CONFIG_OFFICIAL_FLAG" ]; then
             OFFICIAL="1"
@@ -59,6 +62,7 @@ Mandatory options:
 Options:
     -s, --sync            Sync sources before building.
     -c, --clean           Clean build directory before compilation.
+    --c-d, --clean-device Clean device build directory before compilation.
     -o, --official        Build the official variant during compilation.\n"
         exit 1
         ;;
@@ -240,6 +244,11 @@ fi
 if [[ -n $CLEAN ]]; then
     echo -e "$BOLD_GREEN\nNuking the out directory now...$RESET\n"
     rm -rf "out"
+fi
+
+if [[ -n $CLEAN_DEVICE ]]; then
+    echo -e "$BOLD_GREEN\nNuking the device out directory now...$RESET\n"
+    rm -rf "out/target/product/"$DEVICE""
 fi
 
 # Send a notification that the build process has started.

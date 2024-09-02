@@ -311,7 +311,7 @@ build_progress_message="🟡 | <i>Compiling ROM...</i>
 
 edit_message "$build_progress_message" "$CONFIG_CHATID" "$build_message_id"
 
-# Upload Build. Upload the output ROM ZIP file to the index.
+# Upload Build. Upload the output ROM files to the index.
 BUILD_END=$(TZ=Asia/Dhaka date +"%s")
 DIFFERENCE=$((BUILD_END - BUILD_START))
 HOURS=$(($DIFFERENCE / 3600))
@@ -331,10 +331,14 @@ else
     rm "$ota_file"
 
     zip_file=$(ls "$OUT"/*$DEVICE*.zip | tail -n -1)
+    vendor_boot=$(ls "$OUT"/vendor_boot.img | tail -n -2)
+    boot=$(ls "$OUT"/boot.img | tail -n -3)
 
-    echo -e "$BOLD_GREEN\nStarting to upload the ZIP file now...$RESET\n"
+    echo -e "$BOLD_GREEN\nStarting to upload the rom files now...$RESET\n"
 
     zip_file_url=$(upload_file "$zip_file")
+    vendor_boot_url=$(upload_file "$vendor_boot")
+    boot_url=$(upload_file "$boot")
     zip_file_md5sum=$(md5sum $zip_file | awk '{print $1}')
     zip_file_size=$(ls -sh $zip_file | awk '{print $1}')
 
@@ -345,7 +349,9 @@ else
 <b>• TYPE:</b> <code>$([ "$OFFICIAL" == "1" ] && echo "Official" || echo "Unofficial")</code>
 <b>• SIZE:</b> <code>$zip_file_size</code>
 <b>• MD5SUM:</b> <code>$zip_file_md5sum</code>
-<b>• DOWNLOAD:</b> $zip_file_url
+<b>• ROM:</b> $zip_file_url
+<b>• VENDOR_BOOT:</b> $vendor_boot_url
+<b>• BOOT:</b> $boot_url
 
 <i>Compilation took $HOURS hours(s) and $MINUTES minutes(s)</i>"
 

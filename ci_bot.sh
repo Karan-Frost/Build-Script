@@ -205,10 +205,10 @@ if [[ -n $SYNC ]]; then
     SYNC_START=$(TZ=Asia/Kolkata date +"%s")
 
     echo -e "$BOLD_GREEN\nStarting to sync sources now...$RESET\n"
-    if ! repo sync -c --jobs-network=$CONFIG_SYNC_JOBS -j$CONFIG_SYNC_JOBS --jobs-checkout=$CONFIG_SYNC_JOBS --optimized-fetch --prune --force-sync --no-clone-bundle --no-tags; then
+    if ! repo sync -c -j$CONFIG_SYNC_JOBS --force-sync --no-clone-bundle --no-tags; then
         echo -e "$RED\nInitial sync has failed!!$RESET" && echo -e "$BOLD_GREEN\nTrying to sync again with lesser arguments...$RESET\n"
 
-        if ! repo sync -j$CONFIG_SYNC_JOBS; then
+        if ! repo sync --force-sync; then
             echo -e "$RED\nSyncing has failed completely!$RESET" && echo -e "$BOLD_GREEN\nStarting the build now...$RESET\n"
         else
             SYNC_END=$(TZ=Asia/Dhaka date +"%s")

@@ -391,8 +391,8 @@ EOF
 <b>• TYPE:</b> <code>$([ "$CONFIG_OFFICIAL_FLAG" == "1" ] && echo "Official" || echo "Unofficial")</code>
 <b>• SIZE:</b> <code>$zip_file_size</code>
 <b>• MD5SUM:</b> <code>$zip_file_md5sum</code>
-<b>• ROM:</b> $zip_file_url
-<b>• INITIAL INSTALL ZIP:</b> $initial_install_zip_url
+<b>• ROM:</b> <a href=\"$zip_file_url\">Here</a>
+<b>• INITIAL INSTALL ZIP:</b> <a href=\"$initial_install_zip_url\">Here</a>
 
 <i>Compilation took $HOURS hours(s) and $MINUTES minutes(s)</i>"
 

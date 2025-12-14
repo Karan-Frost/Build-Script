@@ -7,7 +7,7 @@ import subprocess
 import requests
 import re
 import shutil
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Visual Constants
 YELLOW = "\033[33m"
@@ -206,6 +206,10 @@ def main():
     cpu_count = os.cpu_count()
     sync_jobs = 12 if cpu_count > 8 else cpu_count
 
+    now = datetime.now(timezone.utc)
+    build_datetime = str(int(now.timestamp()))
+    build_number = now.strftime("%Y%m%d00")
+
     # 1. Disk Optimization
     if args.disk_optimization:
         io_script = os.path.expanduser("~/io.sh")
@@ -276,7 +280,9 @@ def main():
 
     print(f"{BOLD_GREEN}\nSetting up build environment and running brunch...{RESET}")
 
-    build_cmd = (f"bash -c 'source build/envsetup.sh && "
+    export_vars = f"export BUILD_DATETIME={build_datetime} BUILD_NUMBER={build_number}"
+    
+    build_cmd = (f"bash -c '{export_vars} && source build/envsetup.sh && {export_vars} && "
                  f"brunch {CONFIG['DEVICE']} {CONFIG['VARIANT']}' 2>&1 | tee -a build.log")
 
     process = subprocess.Popen(build_cmd, shell=True)

@@ -335,12 +335,21 @@ def main():
         sys.exit(1)
 
     try:
-        files = [f for f in os.listdir(out_dir) if CONFIG['DEVICE'] in f and f.endswith(".zip")]
-        if not files:
+        all_files = [f for f in os.listdir(out_dir) if CONFIG['DEVICE'] in f and f.endswith(".zip")]
+
+        if not all_files:
             raise FileNotFoundError("Build passed (log check), but no ZIP file found in output.")
 
-        files.sort(key=lambda x: os.path.getsize(os.path.join(out_dir, x)), reverse=True)
-        rom_zip = os.path.join(out_dir, files[0])
+        main_files = [f for f in all_files if "ota" not in f.lower() and "target_files" not in f.lower()]
+
+        if main_files:
+            main_files.sort(key=lambda x: os.path.getsize(os.path.join(out_dir, x)), reverse=True)
+            rom_filename = main_files[0]
+        else:
+            all_files.sort(key=lambda x: os.path.getsize(os.path.join(out_dir, x)), reverse=True)
+            rom_filename = all_files[0]
+
+        rom_zip = os.path.join(out_dir, rom_filename)
 
         rom_folder = os.path.join(out_dir, "rom_temp")
         os.makedirs(rom_folder, exist_ok=True)

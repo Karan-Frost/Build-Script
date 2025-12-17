@@ -127,16 +127,9 @@ class CIBot:
 # Helper Functions
 def upload_gofile(file_path):
     try:
-        server_req = requests.get('https://api.gofile.io/servers')
-        server_data = server_req.json()
-        if server_data['status'] != 'ok':
-            return "Error getting gofile server"
-
-        server = server_data['data']['servers'][0]['name']
-
         with open(file_path, 'rb') as f:
             upload_req = requests.post(
-                f'https://{server}.gofile.io/contents/uploadfile',
+                'https://upload.gofile.io/uploadfile',
                 files={'file': f}
             )
         resp = upload_req.json()

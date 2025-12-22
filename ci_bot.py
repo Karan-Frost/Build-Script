@@ -181,7 +181,6 @@ def main():
     parser.add_argument('--config', type=str, default="config.env", help="Path to config file (default: config.env)")
     parser.add_argument('-s', '--sync', dest='sync', action='store_true', help='Sync sources')
     parser.add_argument('-c', '--clean', dest='clean', action='store_true', help='Clean output')
-    parser.add_argument('--c-d', '--clean-device', dest='clean_device', action='store_true', help='Clean device output')
     parser.add_argument('--d-o', '--disk-optimization', dest='disk_optimization', action='store_true', help='Optimize disk')
     args = parser.parse_args()
 
@@ -248,8 +247,8 @@ def main():
     if args.clean:
         print(f"{BOLD_GREEN}\nCleaning 'out' directory...{RESET}")
         shutil.rmtree("out", ignore_errors=True)
-
-    if args.clean_device:
+    else:
+        # Remove device out dir if -c option is not provided
         device_out = f"out/target/product/{CONFIG['DEVICE']}"
         print(f"{BOLD_GREEN}\nCleaning device output: {device_out}{RESET}")
         shutil.rmtree(device_out, ignore_errors=True)

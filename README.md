@@ -81,5 +81,4 @@ Run the script using `python3 ci_bot.py [options]`.
 | **Config** | `--config` | Path to your specific configuration file. Defaults to `config.env` if not specified. |
 | **Sync** | `-s`, `--sync` | Runs `repo sync` before starting the build. Useful for fetching the latest source changes. |
 | **Clean** | `-c`, `--clean` | Deletes the entire `out/` directory. Use this for a completely fresh build (takes longer). |
-| **Clean Device** | `--c-d`, `--clean-device` | Deletes only the device-specific product directory (`out/target/product/device_name`). Useful for fixing device-specific build errors without rebuilding the whole OS. |
 | **Disk Opt.** | `--d-o`, `--disk-optimization` | Runs a disk optimizing script before building. |

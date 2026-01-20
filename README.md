@@ -43,7 +43,7 @@ Adapted by [Frost](https://github.com/Karan-Frost) from the original Bash script
     RCLONE_REMOTE=drive
     RCLONE_FOLDER=roms/device_name
 
-    # Initial install zip Configuration
+    # Initial install zip Configuration (Leave empty if you want to use your device's codename or if your device has recovery.img)
     INITIAL_INSTALL_ZIP_DEVICES=codename|codename2
 
     # Server Management
@@ -62,7 +62,7 @@ Adapted by [Frost](https://github.com/Karan-Frost) from the original Bash script
 | `ERROR_CHAT_ID` | Secondary Chat ID for sending error logs (can be same as CHAT_ID) |
 | `RCLONE_REMOTE` | Your rclone remote name (e.g., `drive`) |
 | `RCLONE_FOLDER` | The target folder on the rclone remote |
-| `INITIAL_INSTALL_ZIP_DEVICES` | The devices you want the initial install zip to be flashable to. If not specified, it falls back to `DEVICE` |
+| `INITIAL_INSTALL_ZIP_DEVICES` | Used **only** if `recovery.img` is missing. Defines allowed devices for the generated install zip. Defaults to `DEVICE` |
 | `POWEROFF` | Set to `True` to power off the server after completion |
 
 ## Artifact Uploads
@@ -70,7 +70,10 @@ Adapted by [Frost](https://github.com/Karan-Frost) from the original Bash script
 The script automatically uploads the build results to two locations:
 
 1.  **ROM Zip:** The main ROM file is uploaded to your **Rclone Remote** defined in the config (e.g., Google Drive, Mega, OneDrive).
-2.  **Other Files:** Other files (e.g., OTA JSON, Initial Install Zip) is uploaded to **GoFile.io** for quick, temporary access.
+2.  **Auxiliary Files:** Uploaded to **GoFile.io** for quick, temporary access. The script uses the following logic:
+    * **Recovery:** If `recovery.img` is found in the output, it is uploaded directly.
+    * **Initial Install Zip:** If `recovery.img` is *not* found, the script generates a flashable zip containing `boot`, `vendor_boot`, and `dtbo` and uploads that instead.
+    * **OTA JSON:** If a matching JSON file is found in `vendor/ota/`, it is also uploaded.
 
 ## Command Line Options
 

@@ -343,32 +343,40 @@ def main():
 
         rom_zip = os.path.join(out_dir, rom_filename)
 
-        rom_folder = os.path.join(out_dir, "rom_temp")
-        os.makedirs(rom_folder, exist_ok=True)
-
-        required_imgs = ["vendor_boot.img", "boot.img", "dtbo.img"]
-        for img in required_imgs:
-            src = os.path.join(out_dir, img)
-            if os.path.exists(src):
-                shutil.copy(src, rom_folder)
-
-        board_req = CONFIG.get('INITIAL_INSTALL_ZIP_DEVICES')
-        if not board_req:
-            board_req = CONFIG['DEVICE']
-
-        with open(os.path.join(rom_folder, "android-info.txt"), "w") as f:
-            f.write(f"require board={board_req}\n")
-
-        with open(os.path.join(rom_folder, "fastboot-info.txt"), "w") as f:
-            f.write("version 1\nflash boot\nflash vendor_boot\nflash dtbo\nreboot bootloader\n")
-
-        initial_zip_name = rom_zip.replace(".zip", "-initial-install.zip")
-        shutil.make_archive(initial_zip_name.replace(".zip", ""), 'zip', rom_folder)
-        shutil.rmtree(rom_folder)
+        recovery_img_path = os.path.join(out_dir, "recovery.img")
+        recovery_link = None
+        initial_link = None
 
         print(f"{BOLD_GREEN}\nUploading files...{RESET}")
+        if os.path.exists(recovery_img_path):
+            recovery_link = upload_gofile(recovery_img_path)
+        else:
+            rom_folder = os.path.join(out_dir, "rom_temp")
+            os.makedirs(rom_folder, exist_ok=True)
+
+            required_imgs = ["vendor_boot.img", "boot.img", "dtbo.img"]
+            for img in required_imgs:
+                src = os.path.join(out_dir, img)
+                if os.path.exists(src):
+                    shutil.copy(src, rom_folder)
+
+            board_req = CONFIG.get('INITIAL_INSTALL_ZIP_DEVICES')
+            if not board_req:
+                board_req = CONFIG['DEVICE']
+
+            with open(os.path.join(rom_folder, "android-info.txt"), "w") as f:
+                f.write(f"require board={board_req}\n")
+
+            with open(os.path.join(rom_folder, "fastboot-info.txt"), "w") as f:
+                f.write("version 1\nflash boot\nflash vendor_boot\nflash dtbo\nreboot bootloader\n")
+
+            initial_zip_name = rom_zip.replace(".zip", "-initial-install.zip")
+            shutil.make_archive(initial_zip_name.replace(".zip", ""), 'zip', rom_folder)
+            shutil.rmtree(rom_folder)
+
+            initial_link = upload_gofile(initial_zip_name)
+
         rom_link = upload_rclone(rom_zip, CONFIG['RCLONE_REMOTE'], CONFIG['RCLONE_FOLDER'])
-        initial_link = upload_gofile(initial_zip_name)
 
         json_path = os.path.join(ROOT_DIRECTORY, "vendor", "ota", f"{CONFIG['DEVICE']}.json")
         json_link = None
@@ -383,7 +391,13 @@ def main():
         md5 = subprocess.check_output(f"md5sum {rom_zip} | awk '{{print $1}}'", shell=True).decode().strip()
         size_human = subprocess.check_output(f"ls -sh {rom_zip} | awk '{{print $1}}'", shell=True).decode().strip()
 
-        downloads = f"<a href=\"{rom_link}\">ROM</a> | <a href=\"{initial_link}\">Initial Install</a>"
+        downloads = f"<a href=\"{rom_link}\">ROM</a>"
+
+        if recovery_link:
+            downloads += f" | <a href=\"{recovery_link}\">Recovery</a>"
+        elif initial_link:
+            downloads += f" | <a href=\"{initial_link}\">Initial Install</a>"
+
         if json_link:
             downloads += f" | <a href=\"{json_link}\">OTA JSON</a>"
 

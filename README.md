@@ -11,7 +11,7 @@ Adapted by [Frost](https://github.com/Karan-Frost) from the original Bash script
 * Python 3.x
 * `requests` library (`pip install requests`)
 * `repo` tool installed and in your PATH
-* `rclone` installed and configured
+* `rclone` installed and configured (Optional, but recommended for ROM storage)
 
 ## Setup
 
@@ -39,7 +39,7 @@ Adapted by [Frost](https://github.com/Karan-Frost) from the original Bash script
     BOT_TOKEN=your_bot_token
     ERROR_CHAT_ID=-100xxxxxxxx
 
-    # Upload Configuration
+    # Upload Configuration (Leave empty to force GoFile upload)
     RCLONE_REMOTE=drive
     RCLONE_FOLDER=roms/device_name
 
@@ -60,17 +60,19 @@ Adapted by [Frost](https://github.com/Karan-Frost) from the original Bash script
 | `CHAT_ID` | Your Telegram Group/Channel Chat ID (e.g., `-100xxxxxxx`) |
 | `BOT_TOKEN` | Your HTTP API Bot Token from BotFather |
 | `ERROR_CHAT_ID` | Secondary Chat ID for sending error logs (can be same as CHAT_ID) |
-| `RCLONE_REMOTE` | Your rclone remote name (e.g., `drive`) |
+| `RCLONE_REMOTE` | Your rclone remote name (e.g., `drive`). If omitted, uploads to GoFile |
 | `RCLONE_FOLDER` | The target folder on the rclone remote |
 | `INITIAL_INSTALL_ZIP_DEVICES` | Used **only** if `recovery.img` is missing. Defines allowed devices for the generated install zip. Defaults to `DEVICE` |
 | `POWEROFF` | Set to `True` to power off the server after completion |
 
 ## Artifact Uploads
 
-The script automatically uploads the build results to two locations:
+The script automatically handles uploads based on your configuration:
 
-1.  **ROM Zip:** The main ROM file is uploaded to your **Rclone Remote** defined in the config (e.g., Google Drive, Mega, OneDrive).
-2.  **Auxiliary Files:** Uploaded to **GoFile.io** for quick, temporary access. The script uses the following logic:
+1.  **ROM Zip:**
+    * **Primary:** Uploads to the **Rclone Remote** defined in the config.
+    * **Fallback:** If `RCLONE_REMOTE` or `RCLONE_FOLDER` are missing from the config, the ROM zip is automatically uploaded to **GoFile.io**.
+2.  **Auxiliary Files:** Always uploaded to **GoFile.io** for quick access:
     * **Recovery:** If `recovery.img` is found in the output, it is uploaded directly.
     * **Initial Install Zip:** If `recovery.img` is *not* found, the script generates a flashable zip containing `boot`, `vendor_boot`, and `dtbo` and uploads that instead.
     * **OTA JSON:** If a matching JSON file is found in `vendor/ota/`, it is also uploaded.

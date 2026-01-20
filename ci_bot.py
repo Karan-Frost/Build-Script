@@ -376,7 +376,14 @@ def main():
 
             initial_link = upload_gofile(initial_zip_name)
 
-        rom_link = upload_rclone(rom_zip, CONFIG['RCLONE_REMOTE'], CONFIG['RCLONE_FOLDER'])
+        rom_link = None
+        rclone_remote = CONFIG.get('RCLONE_REMOTE')
+        rclone_folder = CONFIG.get('RCLONE_FOLDER')
+
+        if rclone_remote and rclone_folder:
+            rom_link = upload_rclone(rom_zip, rclone_remote, rclone_folder)
+        else:
+            rom_link = upload_gofile(rom_zip)
 
         json_path = os.path.join(ROOT_DIRECTORY, "vendor", "ota", f"{CONFIG['DEVICE']}.json")
         json_link = None
